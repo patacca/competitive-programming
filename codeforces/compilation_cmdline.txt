@@ -1,0 +1,1 @@
+g++.exe -static -DONLINE_JUDGE -Wl,--stack=268435456 -O2 -std=c++17 -o %name%.exe %1 2>compilation.log
