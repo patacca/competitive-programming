@@ -85,6 +85,60 @@ long long fast_inv(T a, T p) {
 	return res;
 }
 
+/* Extended Euclidean Algorithm */
+template <typename T>
+T extended_euclidean(T a, T b, T& x, T& y) {
+	x = (T)1;
+	y = (T)0;
+	T x1 = (T)0;
+	T y1 = (T)1;
+	T a1 = a;
+	T b1 = b;
+	while (b1) {
+		T q = a1 / b1;
+		tie(x, x1) = make_tuple(x1, x - q * x1);
+		tie(y, y1) = make_tuple(y1, y - q * y1);
+		tie(a1, b1) = make_tuple(b1, a1 - q * b1);
+	}
+	return a1;
+}
+
+void segmented_sieve_optimized(int n, vector<int>& primes) {
+	const int S = 30'000;
+	
+	int nsqrt = round(sqrt(n));
+	
+	vector<char> is_prime(nsqrt + 1, true);
+	vector<int> lowPrimes, start_indices;
+	for (int i = 3; i <= nsqrt; i += 2) {
+		if (is_prime[i]) {
+			lowPrimes.push_back(i);
+			start_indices.push_back((i * i - 1) / 2);
+			for (int j = i * i; j <= nsqrt; j += 2 * i)
+				is_prime[j] = false;
+		}
+	}
+	
+	primes.push_back(2);
+	vector<char> block(S);
+	int high = (n - 1) / 2;
+	for (int low = 0; low <= high; low += S) {
+		fill(block.begin(), block.end(), true);
+		for (auto i = 0u; i < lowPrimes.size(); i++) {
+			int p = lowPrimes[i];
+			int idx = start_indices[i];
+			for (; idx < S; idx += p)
+				block[idx] = false;
+			start_indices[i] = idx - S;
+		}
+		if (low == 0)
+			block[0] = false;
+		for (int i = 0; i < S && low + i <= high; i++) {
+			if (block[i])
+				primes.push_back((low + i) * 2 + 1);
+		}
+	};
+}
 
 
 
