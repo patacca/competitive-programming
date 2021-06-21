@@ -1,0 +1,8 @@
+#pragma GCC optimize("O3", "unroll-loops")
+#pragma GCC target("popcnt")
+#pragma GCC target("avx2") // packed integral type
+#pragma GCC target("avx") // packed floats / doubles
+#pragma GCC target("FMA") // more effective instructions
+
+// When this is enabled, compiler can generate machine-specific code, that allows to work with 256-bit registers by using of avx instructions.
+// But you need to write code in parallel-style with independent iterations of cycles. 
