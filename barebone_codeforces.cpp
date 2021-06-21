@@ -6,6 +6,8 @@ bool constexpr DEBUG {true};
 
 void debug() { if constexpr(DEBUG) cerr << endl;}
 
+#define BOOST_FUNCTIONAL_HASH_ROTL32(x, r) (x << r) | (x >> (32 - r))
+
 template <typename T1, typename ...T>
 void debug(T1&& head, T&&... args)
 {
@@ -39,6 +41,37 @@ struct custom_hash {
 		return splitmix32(x + FIXED_RANDOM);
 	}
 };
+
+inline void hash_combine(uint32_t &h1, uint32_t k1)
+{
+	const uint32_t c1 = 0xcc9e2d51;
+	const uint32_t c2 = 0x1b873593;
+	
+	k1 *= c1;
+	k1 = BOOST_FUNCTIONAL_HASH_ROTL32(k1,15);
+	k1 *= c2;
+	
+	h1 ^= k1;
+	h1 = BOOST_FUNCTIONAL_HASH_ROTL32(h1,13);
+	h1 = h1*5+0xe6546b64;
+}
+
+inline void hash_combine(uint64_t &h, uint64_t k)
+{
+	const uint64_t m = 0xc6a4a7935bd1e995ULL;
+	const int r = 47;
+	
+	k *= m;
+	k ^= k >> r;
+	k *= m;
+	
+	h ^= k;
+	h *= m;
+	
+	// Completely arbitrary number, to prevent 0's
+	// from hashing to 0.
+	h += 0xe6546b64;
+}
 
 template <typename T>
 inline T custom_ceil(T a, T b)
@@ -178,6 +211,16 @@ void solve(Test& t)
 	
 }
 
+void solveStep()
+{
+	cin >> T;
+	for (int k=0; k < T; ++k) {
+		Test t;
+		cin >> t;
+		solve(t);
+	}
+}
+
 int main (int argc, char * argv[])
 {
 	// Disable old C stdio compability
@@ -185,6 +228,7 @@ int main (int argc, char * argv[])
 	cin.tie(0);
 	
 	readInput();
+	//~ solveStep();
 	
 	// Solve each test
 	for (auto& t : tests) {
