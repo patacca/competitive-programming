@@ -180,11 +180,13 @@ void segmented_sieve_optimized(int n, vector<int>& primes) {
 
 struct Test {
 	public:
-		long long n, x, t;
+		int n, q;
+		string s;
 };
 
 istream& operator>>(istream& s, Test& t) {
-	s >> t.n >> t.x >> t.t;
+	s >> t.n >> t.q;
+	s >> t.s;
 	return s;
 };
 
@@ -209,8 +211,21 @@ void readInput()
 
 void solve(Test& t)
 {
-	long long d = min(t.n-1, t.t/t.x);
-	cout << d*t.n - (d*(d+1)/2) << endl;
+	vector<vector<int>> pre(t.n+1);
+	pre[0] = vector<int>(30, 0);
+	for (int k = 1; k <= t.n; ++k) {
+		pre[k] = pre[k-1];
+		++pre[k][t.s[k-1] - 'a'];
+	}
+	
+	while (t.q--) {
+		int i, j;
+		cin >> i >> j;
+		long long sol {0};
+		for (int k=0; k < 30; ++k)
+			sol += (k+1) * (pre[j][k] - pre[i-1][k]);
+		cout << sol << endl;
+	}
 }
 
 void solveStep()
@@ -223,6 +238,13 @@ void solveStep()
 	}
 }
 
+void solveSingleStep()
+{
+	Test t;
+	cin >> t;
+	solve(t);
+}
+
 int main (int argc, char * argv[])
 {
 	// Disable old C stdio compability
@@ -230,7 +252,8 @@ int main (int argc, char * argv[])
 	cin.tie(0);
 	
 	//~ readInput();
-	solveStep();
+	//~ solveStep();
+	solveSingleStep();
 	
 	// Solve each test
 	for (auto& t : tests) {

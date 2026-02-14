@@ -180,11 +180,16 @@ void segmented_sieve_optimized(int n, vector<int>& primes) {
 
 struct Test {
 	public:
-		long long n, x, t;
+		int n;
+		long long x, k;
+		vector<long long> a;
 };
 
 istream& operator>>(istream& s, Test& t) {
-	s >> t.n >> t.x >> t.t;
+	s >> t.n >> t.k >> t.x;
+	t.a.resize(t.n);
+	for (int k=0; k < t.n; ++k)
+		s >> t.a[k];
 	return s;
 };
 
@@ -209,8 +214,24 @@ void readInput()
 
 void solve(Test& t)
 {
-	long long d = min(t.n-1, t.t/t.x);
-	cout << d*t.n - (d*(d+1)/2) << endl;
+	sort(t.a.begin(), t.a.end());
+	vector<long long> sep;
+	for (int k=1; k < t.n; ++k)
+		if (t.a[k] - t.a[k-1] > t.x)
+			sep.push_back(t.a[k] - t.a[k-1]);
+	
+	sort(sep.begin(), sep.end());
+	int i = 0;
+	while (t.k > 0 && i < (int)sep.size()) {
+		long long f = custom_ceil(sep[i], t.x);
+		--f;
+		if (t.k < f)
+			break;
+		t.k -= f;
+		++i;
+	}
+	
+	cout << (int)sep.size() + 1 - i << endl;
 }
 
 void solveStep()
@@ -223,6 +244,13 @@ void solveStep()
 	}
 }
 
+void solveSingleStep()
+{
+	Test t;
+	cin >> t;
+	solve(t);
+}
+
 int main (int argc, char * argv[])
 {
 	// Disable old C stdio compability
@@ -230,7 +258,8 @@ int main (int argc, char * argv[])
 	cin.tie(0);
 	
 	//~ readInput();
-	solveStep();
+	//~ solveStep();
+	solveSingleStep();
 	
 	// Solve each test
 	for (auto& t : tests) {
